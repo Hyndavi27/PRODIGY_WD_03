@@ -1,56 +1,93 @@
-let seconds = 00;
-let tens = 00;
-let mins = 00;
-let getSeconds = document.querySelector('.seconds');
-let getTens = document.querySelector('.tens');
-let getMins = document.querySelector('.mins');
-let btnStart = document.querySelector('.btn-start');
-let btnStop = document.querySelector('.btn-stop');
-let btnReset = document.querySelector('.btn-reset');
-let interval;
+const board = document.getElementById('board');
+const cells = document.querySelectorAll('.cell');
+const resetButton = document.getElementById('reset');
+const message = document.getElementById('message');
 
-btnStart.addEventListener('click', () => {
-    clearInterval(interval);
-    inverval = setInterval(startTimer, 10);
-})
-btnStop.addEventListener('click', () => {
-    clearInterval(inverval);
-})
-btnReset.addEventListener('click', () => {
-    clearInterval(inverval);
-    tens = '00';
-    seconds = '00';
-    mins = '00';
-    getSeconds.innerHTML = seconds;
-    getTens.innerHTML = tens;
-    getMins.innerHTML = mins;
-})
+let currentPlayer = 'X';
+let gameActive = true;
+let boardState = Array(9).fill('');
 
-function startTimer(){
-    tens++;
-    if(tens <= 9){
-        getTens.innerHTML = '0' + tens;
+const winningCombinations = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+];
+
+function handleCellClick(event) {
+    const clickedCell = event.target;
+    const cellIndex = clickedCell.getAttribute('data-index');
+
+    if (boardState[cellIndex] !== '' || !gameActive) {
+        return;
     }
-    if(tens > 9){
-        getTens.innerHTML = tens;
-    }
-    if(tens > 99){
-        seconds++;
-        getSeconds.innerHTML = '0' + seconds;
-        tens = 0;
-        getTens.innerHTML = '0' + 0;
-    }
-    if(seconds > 9){
-        getSeconds.innerHTML = seconds;
-    }
-    if(seconds > 59){
-        mins++;
-        getMins.innerHTML = '0' + mins;
-        seconds = 0;
-        getSeconds.innerHTML = '0' + 0;
-    }
-    if(mins > 9){
-        getSeconds.innerHTML = mins;
+
+    boardState[cellIndex] = currentPlayer;
+    clickedCell.textContent = currentPlayer;
+    checkResult();
+
+    if (gameActive) {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        if (currentPlayer === 'O') {
+            makeAIMove();
+        }
     }
 }
 
+function checkResult() {
+    let roundWon = false;
+    for (let i = 0; i < winningCombinations.length; i++) {
+        const [a, b, c] = winningCombinations[i];
+        if (boardState[a] && boardState[a] === boardState[b] && boardState[a] === boardState[c]) {
+            roundWon = true;
+            break;
+        }
+    }
+
+    if (roundWon) {
+        gameActive = false;
+        message.textContent = `Player ${currentPlayer} wins!`;
+        return;
+    }
+
+    if (!boardState.includes('')) {
+        gameActive = false;
+        message.textContent = "It's a draw!";
+        return;
+    }
+}
+
+function makeAIMove() {
+    let availableCells = [];
+    boardState.forEach((cell, index) => {
+        if (cell === '') {
+            availableCells.push(index);
+        }
+    });
+
+    if (availableCells.length > 0) {
+        const randomIndex = availableCells[Math.floor(Math.random() * availableCells.length)];
+        boardState[randomIndex] = currentPlayer;
+        cells[randomIndex].textContent = currentPlayer;
+        checkResult();
+
+        if (gameActive) {
+            currentPlayer = 'X';
+        }
+    }
+}
+
+function resetGame() {
+    boardState.fill('');
+    cells.forEach(cell => cell.textContent = '');
+    gameActive = true;
+    currentPlayer = 'X';
+    message.textContent = '';
+}
+
+cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+resetButton.addEventListener('click', resetGame);
