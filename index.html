@@ -3,21 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stopwatch</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="wrapper">
-            <p>
-                <span class="mins">00</span>:<span class="seconds">00</span>:<span class="tens">00</span>
-            </p> <br>
-            <button class="btn-start">Start</button>
-            <button class="btn-stop">Stop</button>
-            <button class="btn-reset">Reset</button>
+    <div class="game-container">
+        <h1>Tic-Tac-Toe</h1>
+        <div class="game-board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
         </div>
+        <button id="reset">Reset</button>
+        <p id="message"></p>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
